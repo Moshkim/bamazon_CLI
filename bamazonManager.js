@@ -81,7 +81,9 @@ function postProduct() {
                 product_name: response.name,
                 department_name: response.department,
                 price: response.price,
-                stock_quantity: response.quantity
+                stock_quantity: response.quantity,
+                product_sales: 0,
+                product_sold: 0
             },
             function(error, res){
                 if(error){
@@ -108,7 +110,9 @@ function getProduct(query) {
                 "Product Name: " + res[i].product_name + ", " +
                 "Department Name: " + res[i].department_name + ", " +
                 "Price: " + res[i].price + ", " +
-                "Stock Quantity: " + res[i].stock_quantity + "\n")
+                "Stock Quantity: " + res[i].stock_quantity + ", " +
+                "Product Sale: " + res[i].product_sales + ", " +
+                "Product Sold: " + res[i].product_sold + "\n")
             }
             startInquirer()
         }
@@ -137,7 +141,7 @@ function whichProduct() {
 
 
 function updateStock(id, quantity){
-    let query = 'select products.price, products.stock_quantity from products where ?'
+    let query = 'select products.price, products.stock_quantity, products.product_sales, products.product_sold from products where ?'
     connection.query(query, 
         {
             item_id: id

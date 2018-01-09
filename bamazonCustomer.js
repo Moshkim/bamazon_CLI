@@ -69,7 +69,9 @@ function postProduct() {
                 product_name: response.name,
                 department_name: response.department,
                 price: response.price,
-                stock_quantity: response.quantity
+                stock_quantity: response.quantity,
+                product_sales: 0,
+                product_sold: 0
             },
             function(error, res){
                 if(error){
@@ -99,7 +101,8 @@ function getProduct() {
                 "Product Name: " + res[i].product_name + ", " +
                 "Department Name: " + res[i].department_name + ", " +
                 "Price: " + res[i].price + ", " +
-                "Stock Quantity: " + res[i].stock_quantity + "\n")
+                "Stock Quantity: " + res[i].stock_quantity + ", " +
+                "Product Sale: " + res[i].product_sales + "\n")
             }
             wantToBuy()
         }
@@ -140,7 +143,7 @@ function buyProduct() {
     ]).then(function(result){
         let id = result.ID
         let quantity = result.quantity
-        let query = 'select products.price, products.stock_quantity from products where ?'
+        let query = 'select products.price, products.stock_quantity, products.product_sales, products.product_sold from products where ?'
         connection.query(query, 
             {
                 item_id: id
@@ -150,7 +153,7 @@ function buyProduct() {
                     throw error
                 }
 
-                //console.log(response[0].stock_quantity)
+                //console.log(response[0].product_sales)
                 if(response[0].stock_quantity < result.quantity){
                     console.log("Insufficient quantity!")
                     buyProduct()
@@ -159,7 +162,9 @@ function buyProduct() {
 
                     connection.query(updateQuery,[
                         {
-                            stock_quantity: (parseInt(response[0].stock_quantity) - parseInt(quantity))
+                            stock_quantity: (parseInt(response[0].stock_quantity) - parseInt(quantity)),
+                            product_sales: ((parseFloat(response[0].product_sales))+(parseFloat(response[0].price) * quantity)),
+                            product_sold: (parseInt(response[0].product_sold)+parseInt(quantity))
                         },
                         {
                             item_id: id
